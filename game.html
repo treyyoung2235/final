@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Challenge Picker</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      text-align: center;
+      padding: 50px;
+      color: #333;
+      overflow-x: hidden;
+      transition: background 0.5s;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.75);
+      z-index: -1;
+    }
+    body.dark {
+      background: url('https://images.unsplash.com/photo-1496307653780-42ee777d4833?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #eee;
+    }
+    body.dark::before {
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    h1 {
+      color: #fff;
+      text-shadow: 1px 1px 4px #333;
+    }
+    .challenge-box {
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 400px;
+      background-color: #ffffffee;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      font-size: 1.2em;
+      transition: all 0.3s ease;
+    }
+    body.dark .challenge-box {
+      background-color: #2e2e2e;
+    }
+    button {
+      background-color: #1565c0;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      margin: 10px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    button:hover {
+      background-color: #0d47a1;
+      transform: scale(1.05);
+    }
+    select {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 6px;
+    }
+    .done {
+      color: #0f9d58;
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 1.1em;
+    }
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: #fff;
+      border-radius: 50%;
+      animation: fall 2s linear forwards;
+      z-index: 9999;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    .badge {
+      display: inline-block;
+      background-color: #ffd54f;
+      color: #333;
+      padding: 4px 10px;
+      margin: 5px;
+      border-radius: 20px;
+      font-size: 0.9em;
+    }
+    .nav-links {
+      margin-top: 20px;
+    }
+    .nav-links a {
+      display: inline-block;
+      margin: 0 10px;
+      color: #fff;
+      text-decoration: none;
+      background-color: #3949ab;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.95em;
+      transition: background 0.3s;
+    }
+    .nav-links a:hover {
+      background-color: #1a237e;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 Daily Challenge Picker</h1>
+
+  <label for="category">Choose Category:</label>
+  <select id="category">
+    <option value="all">All</option>
+    <option value="health">Health</option>
+    <option value="kindness">Kindness</option>
+    <option value="creativity">Creativity</option>
+  </select>
+
+  <div class="challenge-box" id="challengeBox">Click the button to get a challenge!</div>
+  <div id="quoteBox"></div>
+  <button onclick="newChallenge()">🎲 New Challenge</button>
+  <button onclick="markDone()">✅ Mark as Done</button>
+  <button onclick="toggleDarkMode()">🌓 Toggle Dark Mode</button>
+  <button onclick="downloadLog()">📄 Download Log</button>
+  <div class="done" id="doneMessage"></div>
+  <div id="badges"></div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+  <div class="nav-links">
+    <a href="index.html">🏠 Home</a>
+    <a href="scratch.html">📝 My Work</a>
+    <a href="resume.html">📄 Resume</a>
+  </div>
+
+  <script>
+    const categories = {
+      health: [
+        "Take a 15-minute walk without your phone.",
+        "Drink 8 glasses of water today.",
+        "Stretch for 10 minutes.",
+        "Avoid sugar today!"
+      ],
+      kindness: [
+        "Send a kind message to someone.",
+        "Compliment a stranger.",
+        "Help someone with a small task."
+      ],
+      creativity: [
+        "Write one page in a journal.",
+        "Try a new recipe or snack.",
+        "Listen to a new music genre."
+      ]
+    };
+
+    const allChallenges = [...categories.health, ...categories.kindness, ...categories.creativity];
+    const quotes = [
+      "You are stronger than you think.",
+      "Small steps lead to big changes.",
+      "Believe in your ability to grow.",
+      "Today is a fresh start."
+    ];
+
+    let completedChallenges = JSON.parse(localStorage.getItem('completed')) || [];
+
+    function newChallenge() {
+      const cat = document.getElementById("category").value;
+      const list = cat === "all" ? allChallenges : categories[cat];
+      const randomIndex = Math.floor(Math.random() * list.length);
+      const challenge = list[randomIndex];
+
+      const today = new Date().toLocaleDateString();
+      localStorage.setItem("todaysChallenge", JSON.stringify({ date: today, challenge }));
+      document.getElementById("challengeBox").innerText = challenge;
+      document.getElementById("doneMessage").innerText = "";
+
+      const quote = quotes[Math.floor(Math.random() * quotes.length)];
+      document.getElementById("quoteBox").innerText = `\n"${quote}"`;
+    }
+
+    function markDone() {
+      const challenge = document.getElementById("challengeBox").innerText;
+      if (challenge && challenge !== "Click the button to get a challenge!") {
+        document.getElementById("doneMessage").innerText = "🎉 Great job! Challenge completed.";
+        launchConfetti();
+        const today = new Date().toLocaleDateString();
+        completedChallenges.push(`${today}: ${challenge}`);
+        localStorage.setItem('completed', JSON.stringify(completedChallenges));
+        giveBadge();
+        playSound();
+      }
+    }
+
+    function launchConfetti() {
+      for (let i = 0; i < 40; i++) {
+        const confetti = document.createElement("div");
+        confetti.classList.add("confetti");
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.backgroundColor = randomColor();
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 2000);
+      }
+    }
+
+    function randomColor() {
+      const colors = ["#42a5f5", "#66bb6a", "#ffca28", "#ec407a", "#ab47bc", "#29b6f6"];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+    }
+
+    function downloadLog() {
+      const text = completedChallenges.join("\n");
+      const blob = new Blob([text], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "challenge_log.txt";
+      link.click();
+    }
+
+    function giveBadge() {
+      const badge = document.createElement("div");
+      badge.classList.add("badge");
+      badge.innerText = "🏆 Completed Challenge!";
+      document.getElementById("badges").appendChild(badge);
+    }
+
+    function playSound() {
+      const audio = new Audio("https://www.myinstants.com/media/sounds/success-fanfare-trumpets.mp3");
+      audio.play();
+    }
+
+    const saved = JSON.parse(localStorage.getItem("todaysChallenge"));
+    const today = new Date().toLocaleDateString();
+    if (saved && saved.date === today) {
+      document.getElementById("challengeBox").innerText = saved.challenge;
+    }
+  </script>
+  <br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+</div>
+</body>
+</html>

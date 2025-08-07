@@ -1,0 +1,31 @@
+body {
+      background-color: rgb(86, 92, 99);
+     color:rgb(255, 255, 255)
+    }
+    a {
+      color: antiquewhite; 
+    }
+p{
+  font-family: 'Times New Roman', Times, serif;
+  font-size: larger;
+}
+.players{
+  font-family: Arial, Helvetica, sans-serif;
+  color:rgb(255, 255, 255);
+  font-weight: smaller;
+}
+
+.bold{
+  font-weight: bold;
+  font-size: larger;
+  color:rgb(75, 167, 241)
+}
+.title{
+  font-weight: bold;
+  color:rgb(75, 167, 241)
+  
+}
+.small{
+font-size: smaller;
+  color: white;
+}
